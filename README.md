@@ -105,18 +105,17 @@ resource "aws_autoscaling_group" "my_asg" {
 
   tag {
     key                 = "asg:hostname_pattern"
-    value               = "${var.hostname_prefix}-#instanceid.${var.vpc_name}.testing@${var.internal_zone_id}"
+    value               = "${var.hostname_prefix}-#instanceid.prod.growtix.io@${var.internal_zone_id}"
     propagate_at_launch = true
   }
 }
 
 module "autoscale_dns" {
-  source = "meltwater/asg-dns-handler/aws"
-  version = "x.y.z"
-  
-  autoscale_handler_unique_identifier = "my_asg_handler"
-  autoscale_route53zone_arn           = var.internal_zone_id
-  vpc_name                            = var.vpc_name
+  source  = "github.com/patrontech/devops-tf-module-aws-asg-dns-handler?ref=v1.0.7"
+  # use_public_ip = true
+  prefix = var.aws_base_tags.env_name
+  name = "aws-app-node"
+  route53_id = data.aws_route53_zone.private_zone.id
 }
 ```
 
