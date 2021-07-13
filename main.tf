@@ -2,7 +2,8 @@ resource "aws_sns_topic" "autoscale_handling" {
   name = "${var.prefix}-${var.name}"
 }
 locals {
-  iam_name = replace(title(var.prefix)title(var.name),'-','')
+  titled_iam_name = "${title(var.prefix)}${title(var.name)}"
+  iam_name = replace(local.titled_iam_name,"-","")
 }
 
 resource "aws_iam_role_policy" "autoscale_handling" {
