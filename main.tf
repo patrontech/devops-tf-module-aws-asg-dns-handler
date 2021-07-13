@@ -3,7 +3,7 @@ resource "aws_sns_topic" "autoscale_handling" {
 }
 
 resource "aws_iam_role_policy" "autoscale_handling" {
-  name = "${title(var.prefix)}${title(var.name)}"
+  name = replace(title(var.prefix)title(var.name),'-','')
   role = aws_iam_role.autoscale_handling.name
   policy = <<EOF
 {
@@ -45,7 +45,7 @@ EOF
 }
 
 resource "aws_iam_role" "autoscale_handling" {
-  name = "${title(var.prefix)}${title(var.name)}AutoscaleDNSHandler"
+  name = "${replace(title(var.prefix)title(var.name),'-','')}AutoscaleDNSHandler"
 
   assume_role_policy = <<EOF
 {
@@ -66,7 +66,7 @@ EOF
 }
 
 resource "aws_iam_role" "lifecycle" {
-  name               = "${title(var.prefix)}${title(var.name)}Lifecycle"
+  name               = "${replace(title(var.prefix)title(var.name),'-','')}Lifecycle"
   assume_role_policy = data.aws_iam_policy_document.lifecycle.json
 }
 
@@ -106,7 +106,7 @@ resource "aws_lambda_function" "autoscale_handling" {
   depends_on = [aws_sns_topic.autoscale_handling]
 
   filename         = data.archive_file.autoscale.output_path
-  function_name    = var.prefix
+  function_name    = "${var.prefix}-${var.name}"
   role             = aws_iam_role.autoscale_handling.arn
   handler          = "autoscale.lambda_handler"
   runtime          = "python3.8"
