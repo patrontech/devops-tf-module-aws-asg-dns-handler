@@ -1,9 +1,12 @@
 resource "aws_sns_topic" "autoscale_handling" {
   name = "${var.prefix}-${var.name}"
 }
+locals {
+  iam_name = replace(title(var.prefix)title(var.name),'-','')
+}
 
 resource "aws_iam_role_policy" "autoscale_handling" {
-  name = replace(title(var.prefix)title(var.name),'-','')
+  name = local.iam_name
   role = aws_iam_role.autoscale_handling.name
   policy = <<EOF
 {
@@ -45,7 +48,7 @@ EOF
 }
 
 resource "aws_iam_role" "autoscale_handling" {
-  name = "${replace(title(var.prefix)title(var.name),'-','')}AutoscaleDNSHandler"
+  name = "${local.iam_name}AutoscaleDNSHandler"
 
   assume_role_policy = <<EOF
 {
@@ -66,7 +69,7 @@ EOF
 }
 
 resource "aws_iam_role" "lifecycle" {
-  name               = "${replace(title(var.prefix)title(var.name),'-','')}Lifecycle"
+  name               = "${local.iam_name}Lifecycle"
   assume_role_policy = data.aws_iam_policy_document.lifecycle.json
 }
 
@@ -83,7 +86,7 @@ data "aws_iam_policy_document" "lifecycle" {
 }
 
 resource "aws_iam_role_policy" "lifecycle_policy" {
-  name   = "${title(var.prefix)}${title(var.name)}Lifecycle"
+  name   = "${local.iam_name}Lifecycle"
   role   = aws_iam_role.lifecycle.id
   policy = data.aws_iam_policy_document.lifecycle_policy.json
 }
@@ -136,4 +139,3 @@ resource "aws_sns_topic_subscription" "autoscale_handling" {
   protocol  = "lambda"
   endpoint  = aws_lambda_function.autoscale_handling.arn
 }
-
