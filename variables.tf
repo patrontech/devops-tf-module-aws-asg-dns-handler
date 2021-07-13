@@ -1,9 +1,9 @@
-variable "autoscale_handler_unique_identifier" {
-  description = "asg_dns_handler"
+variable "prefix" {
+  description = "Unique prefix for all the assets e.g hendrix, clapton, prod"
 }
 
-variable "vpc_name" {
-  description = "The name of the VPC"
+variable "name" {
+  description = "Unique prefix for all the assets e.g aws-app-node-autoscaler"
 }
 
 variable "use_public_ip" {
@@ -11,7 +11,7 @@ variable "use_public_ip" {
   default     = false
 }
 
-variable "autoscale_route53zone_arn" {
-  description = "The ARN of route53 zone associated with autoscaling group"
+variable "route53_id" {
+  description = "The ID of route53 zone associated with autoscaling group"
 }
 
