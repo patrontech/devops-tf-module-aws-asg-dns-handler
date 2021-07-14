@@ -81,6 +81,23 @@ def update_name_tag(instance_id, hostname):
         ]
     )
 
+# Updates the name tag of an instance
+def update_fqdn_tag(instance_id, hostname):
+    tag_name = hostname
+    logger.info("Updating fqdn tag for instance-id %s with: %s", instance_id, tag_name)
+    ec2.create_tags(
+        Resources = [
+            instance_id
+        ],
+        Tags = [
+            {
+                'Key': 'FQDN',
+                'Value': tag_name
+            }
+        ]
+    )
+
+
 # Updates a Route53 record
 def update_record(zone_id, ip, hostname, operation):
     logger.info("Changing record with %s for %s -> %s in %s", operation, hostname, ip, zone_id)
@@ -124,8 +141,8 @@ def process_message(message):
 
     if operation == "UPSERT":
         ip = fetch_ip_from_ec2(instance_id)
-
         update_name_tag(instance_id, hostname)
+        update_fqdn_tag(instance_id, hostname)
     else:
         ip = fetch_ip_from_route53(hostname, zone_id)
 
